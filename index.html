@@ -308,10 +308,12 @@
 
     window.addEventListener('keydown', (e) => {
       if (e.code === 'Space' || e.key === ' ') {
+        e.preventDefault();
+        if (e.repeat) return;
         handleTap(e);
       }
     });
-
+    
     buttons.forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
