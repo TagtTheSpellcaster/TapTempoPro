@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
   <title>Tap Tempo Pro</title>
-  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  
   <!-- PWA & Mobile Meta Tags -->
   <meta name="theme-color" content="#0f172a">
   <meta name="mobile-web-app-capable" content="yes">
@@ -12,10 +12,12 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Tap Tempo">
   
-  <!-- Web App Manifest -->
+  <!-- Web App Manifest & Icons -->
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/svg+xml" href="icon.svg">
-  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
 
   <style>
     :root {
@@ -249,29 +251,30 @@
       ctx.textBaseline = "middle";
 
       const bpmText = Math.round(bpm).toString();
-      const fontSize = Math.min(width * 0.35, height * 0.45);
-      
-      // BPM Value
+      const fontSize = Math.min(width * 0.30, height * 0.35);
+      const centerY = height / 2;
+
+      // 1. Numero BPM
       ctx.fillStyle = "#f8fafc";
       ctx.font = `700 ${fontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
-      ctx.fillText(bpmText, width / 2, height / 2 - fontSize * 0.12);
+      ctx.fillText(bpmText, width / 2, centerY - fontSize * 0.35);
 
-      // BPM Label
+      // 2. Etichetta BPM
       ctx.fillStyle = "#38bdf8";
-      ctx.font = `600 ${fontSize * 0.18}px -apple-system, BlinkMacSystemFont, sans-serif`;
-      ctx.fillText("BPM", width / 2, height / 2 + fontSize * 0.30);
+      ctx.font = `600 ${fontSize * 0.22}px -apple-system, BlinkMacSystemFont, sans-serif`;
+      ctx.fillText("BPM", width / 2, centerY + fontSize * 0.25);
 
-      // Tempo Marking (Agogica)
+      // 3. Agogica
       const marking = getTempoMarking(bpm);
       ctx.fillStyle = "#94a3b8";
-      ctx.font = `500 ${fontSize * 0.14}px -apple-system, BlinkMacSystemFont, sans-serif`;
-      ctx.fillText(marking, width / 2, height / 2 + fontSize * 0.45);
+      ctx.font = `500 ${fontSize * 0.16}px -apple-system, BlinkMacSystemFont, sans-serif`;
+      ctx.fillText(marking, width / 2, centerY + fontSize * 0.45);
 
-      // Interval in Milliseconds (ms)
+      // 4. Intervallo in Millisecondi (ms)
       const msText = `${Math.round(avgMs)} ms`;
       ctx.fillStyle = "#64748b";
-      ctx.font = `500 ${fontSize * 0.11}px -apple-system, BlinkMacSystemFont, sans-serif`;
-      ctx.fillText(msText, width / 2, height / 2 + fontSize * 0.58);
+      ctx.font = `500 ${fontSize * 0.12}px -apple-system, BlinkMacSystemFont, sans-serif`;
+      ctx.fillText(msText, width / 2, centerY + fontSize * 0.62);
 
       // Progress bar (taps count)
       const barHeight = 6;
