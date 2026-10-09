@@ -195,9 +195,11 @@
     function resizeCanvas() {
       const rect = wrapper.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
+
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       render();
     }
 
@@ -245,4 +247,84 @@
       // Interval in Milliseconds (ms)
       const msText = `${Math.round(avgMs)} ms`;
       ctx.fillStyle = "#64748b";
-      ctx.
+      ctx.font = `500 ${fontSize * 0.11}px -apple-system, BlinkMacSystemFont, sans-serif`;
+      ctx.fillText(msText, width / 2, height / 2 + fontSize * 0.58);
+
+      // Progress bar (taps count)
+      const barHeight = 6;
+      const intervalsCount = tapTimes.length - 1;
+      const progress = Math.min(intervalsCount / maxIntervals, 1);
+      
+      ctx.fillStyle = "#334155";
+      ctx.fillRect(0, height - barHeight, width, barHeight);
+
+      ctx.fillStyle = "#38bdf8";
+      ctx.fillRect(0, height - barHeight, width * progress, barHeight);
+    }
+
+    function handleTap(e) {
+      if (e) e.preventDefault();
+
+      const now = performance.now();
+
+      if (autoResetTimer) {
+        clearTimeout(autoResetTimer);
+      }
+
+      tapTimes.push(now);
+
+      if (tapTimes.length - 1 > maxIntervals) {
+        tapTimes.shift();
+      }
+
+      if (tapTimes.length >= 2) {
+        let totalInterval = 0;
+        for (let i = 1; i < tapTimes.length; i++) {
+          totalInterval += (tapTimes[i] - tapTimes[i - 1]);
+        }
+        avgMs = totalInterval / (tapTimes.length - 1);
+        bpm = 60000 / avgMs;
+      }
+
+      autoResetTimer = setTimeout(() => {
+        resetTap();
+      }, AUTO_RESET_DELAY);
+
+      render();
+    }
+
+    function resetTap() {
+      tapTimes = [];
+      bpm = 0;
+      avgMs = 0;
+      if (autoResetTimer) {
+        clearTimeout(autoResetTimer);
+        autoResetTimer = null;
+      }
+      render();
+    }
+
+    wrapper.addEventListener('pointerdown', handleTap);
+
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.key === ' ') {
+        handleTap(e);
+      }
+    });
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        maxIntervals = parseInt(btn.dataset.window, 10);
+        modeDesc.textContent = descriptions[maxIntervals];
+        resetTap();
+      });
+    });
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+  </script>
+</body>
+</html>
